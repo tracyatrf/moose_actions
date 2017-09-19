@@ -5,18 +5,38 @@ Our team finds ourselves constantly writing the same style of code -- verify a c
 
 
 ## Usage
+
+moose_actions supports both defining an action, and recalling it later with the `define_action` method, or you can just create an anonymous action using the `action` method. Both forms take the action definition block, however the `action` method will immediately execute, while the defined action can be recalled with `do_action :action_name`.
+
 ```
 require 'moose_actions'
 class Flow
   include MooseActions
+
   define_action :click do 
     ensure_before { true }
     action { puts "Stuff" }
     ensure_after { false }
     error { puts "uh ohs" }
   end
+  
+  def do_anonymous_action
+    action do
+      ensure_before { true }
+      action { puts "Stuff" }
+      ensure_after { true }
+      error { puts "uh ohs" }
+    end
+  end
+
+  def do_defined_action
+    do_action :click
+  end
 end
 
-f = Flow.new
-f.do_action :click
+flow = Flow.new
+
+flow.do_anonymous_action
+flow.do_defined_action
+
 ```

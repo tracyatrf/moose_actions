@@ -14,6 +14,10 @@ module MooseActions
     moose_actions.fetch(action).action_sequence(self, *args)
   end
 
+  def action(name = :unnamed, *args, &block)
+    MooseAction.new(name, &block).action_sequence(self, *args)
+  end
+
   module ClassMethods
     attr_accessor :moose_actions
 
