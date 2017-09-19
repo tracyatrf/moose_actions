@@ -1,12 +1,17 @@
+require_relative "moose_action"
+
 module MooseActions
-  
   def self.included(base)
     base.extend(ClassMethods)
     base.moose_actions = {}
   end
 
-  def do_action( action )
-    self.class.moose_actions.fetch(action).action_sequence
+  def moose_actions
+    self.class.moose_actions
+  end
+
+  def do_action( action, *args )
+    moose_actions.fetch(action).action_sequence(self, *args)
   end
 
   module ClassMethods
