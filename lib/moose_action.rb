@@ -4,8 +4,8 @@ class MooseAction
 
   BLOCK_METHODS = [:ensure_before, :ensure_after, :action, :error]
 
-  attr_accessor :name  
-  
+  attr_accessor :name
+
   def initialize(name, &block)
     @name = name
     self.instance_exec self, &block
@@ -20,13 +20,13 @@ class MooseAction
   end
 
   def action_sequence(context, *args)
-    raise PreconditionNotMet if ensure_before_block and not context.instance_exec *args, &ensure_before_block
+    raise PreconditionNotMet if ensure_before_block and context.instance_exec(*args, &ensure_before_block) == false
     return_value = begin
       context.instance_exec *args, &action_block
     rescue => error
-      error_block ? error_block.call : (raise "Could not complete #{name} action -- #{error}")
+      error_block ? context.instance_exec(*args, &error_block) : (raise "Could not complete #{name} action -- #{error}")
     end
-    raise PostconditionNotMet if ensure_after_block and not context.instance_exec *args, &ensure_after_block
+    raise PostconditionNotMet if ensure_after_block and context.instance_exec(*args, &ensure_after_block) == false
     return_value
   end
 end
