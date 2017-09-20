@@ -2,8 +2,8 @@ require_relative '../lib/moose_action.rb'
 require_relative '../lib/moose_actions.rb'
 
 RSpec.describe MooseActions do 
-  let(:flow_class) { Struct.new(:foo).include(MooseActions) }
-  let(:flow) { flow_class.new("foo") }
+  let(:flow_class) { Class.new { include(MooseActions) } }
+  let(:flow) { flow_class.new }
   let(:action) do
     MooseAction.new(:click) do 
       action {"Bar"} 

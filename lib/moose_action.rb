@@ -20,13 +20,31 @@ class MooseAction
   end
 
   def action_sequence(context, *args)
+    before_sequence(context, args)
+    return_value = main_sequence(context, args)
+    after_sequence(context, args)
+    return_value
+  end
+
+  def before_sequence(context, args)
     raise PreconditionNotMet if ensure_before_block and context.instance_exec(*args, &ensure_before_block) == false
-    return_value = begin
+  end
+
+  def main_sequence(context, args)
+    with_error(context, args) do
       context.instance_exec *args, &action_block
+    end
+  end
+
+  def after_sequence(context, args)
+    raise PostconditionNotMet if ensure_after_block and context.instance_exec(*args, &ensure_after_block) == false
+  end
+
+  def with_error(context, args)
+    begin
+      yield
     rescue => error
       error_block ? context.instance_exec(*args, &error_block) : (raise "Could not complete #{name} action -- #{error}")
     end
-    raise PostconditionNotMet if ensure_after_block and context.instance_exec(*args, &ensure_after_block) == false
-    return_value
   end
 end

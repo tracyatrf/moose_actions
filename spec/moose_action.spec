@@ -34,7 +34,7 @@ RSpec.describe MooseAction do
     end
 
     context "Action Sequence" do 
-      let(:flow) { Struct.new(:foo, :bar, :baz).new(1,2,3) }
+      let(:flow) { double("flow", foo: 1, bar: 2, baz: 3) }
       let(:subject) do
         MooseAction.new(:click) do
           ensure_before { foo }
